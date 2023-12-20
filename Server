@@ -1,0 +1,258 @@
+```bash
+сервер
+
+[root@nfss vagrant]# firewall-cmd --add-service="nfs3" \
+
+> --add-service="rpc-bind" \
+
+> --add-service="mountd" \
+
+> --permanent
+
+success
+
+[root@nfss vagrant]# firewall-cmd --reload
+
+[root@nfss vagrant]# vi /etc/exports
+
+[root@nfss vagrant]# cat /etc/exports
+
+/srv/share 192.168.57.1/32(rw,sync,root_squash)
+
+/srv/share 192.168.57.2/32(rw,sync,root_squash)
+
+[root@nfss vagrant]# ls -l /srv/share/
+
+total 0
+
+drwxrwxrwx. 2 nfsnobody nfsnobody 6 Dec 19 16:24 upload
+
+[root@nfss vagrant]# exportfs -r
+
+[root@nfss vagrant]# exportfs -s
+
+/srv/share  192.168.57.2/32(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)
+
+[root@nfss vagrant]# systemctl status nfs
+
+● nfs-server.service - NFS server and services
+
+   Loaded: loaded (/usr/lib/systemd/system/nfs-server.service; enabled; vendor preset: disabled)
+
+  Drop-In: /run/systemd/generator/nfs-server.service.d
+
+           └─order-with-mounts.conf
+
+   Active: active (exited) since Wed 2023-12-20 12:33:32 UTC; 7min ago
+
+  Process: 809 ExecStartPost=/bin/sh -c if systemctl -q is-active gssproxy; then systemctl reload gssproxy ; fi (code=exited, status=0/SUCCESS)
+
+  Process: 781 ExecStart=/usr/sbin/rpc.nfsd $RPCNFSDARGS (code=exited, status=0/SUCCESS)
+
+  Process: 778 ExecStartPre=/usr/sbin/exportfs -r (code=exited, status=0/SUCCESS)
+
+ Main PID: 781 (code=exited, status=0/SUCCESS)
+
+   CGroup: /system.slice/nfs-server.service
+
+
+
+Dec 20 12:33:31 nfss systemd[1]: Starting NFS server and services...
+
+Dec 20 12:33:32 nfss systemd[1]: Started NFS server and services.
+
+[root@nfss vagrant]# cd /srv/share/upload/
+
+[root@nfss upload]# touch check_file
+
+[root@nfss upload]# ls
+
+check_file  client_file
+
+[vagrant@nfss ~]$ sudo -s
+
+[root@nfss vagrant]# ls -l /srv/share/upload/
+
+total 0
+
+-rw-r--r--. 1 root      root      0 Dec 20 13:09 check_file
+
+-rw-r--r--. 1 nfsnobody nfsnobody 0 Dec 20 13:11 client_file
+
+[root@nfss vagrant]# systemctl status nfs
+
+● nfs-server.service - NFS server and services
+
+   Loaded: loaded (/usr/lib/systemd/system/nfs-server.service; enabled; vendor preset: disabled)
+
+  Drop-In: /run/systemd/generator/nfs-server.service.d
+
+           └─order-with-mounts.conf
+
+   Active: active (exited) since Wed 2023-12-20 13:45:28 UTC; 5min ago
+
+  Process: 803 ExecStartPost=/bin/sh -c if systemctl -q is-active gssproxy; then systemctl reload gssproxy ; fi (code=exited, status=0/SUCCESS)
+
+  Process: 778 ExecStart=/usr/sbin/rpc.nfsd $RPCNFSDARGS (code=exited, status=0/SUCCESS)
+
+  Process: 776 ExecStartPre=/usr/sbin/exportfs -r (code=exited, status=0/SUCCESS)
+
+ Main PID: 778 (code=exited, status=0/SUCCESS)
+
+   CGroup: /system.slice/nfs-server.service
+
+
+
+Dec 20 13:45:28 nfss systemd[1]: Starting NFS server and services...
+
+Dec 20 13:45:28 nfss systemd[1]: Started NFS server and services.
+
+[root@nfss vagrant]# systemctl status firewalld
+
+● firewalld.service - firewalld - dynamic firewall daemon
+
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+
+   Active: active (running) since Wed 2023-12-20 13:45:21 UTC; 5min ago
+
+     Docs: man:firewalld(1)
+
+ Main PID: 401 (firewalld)
+
+   CGroup: /system.slice/firewalld.service
+
+           └─401 /usr/bin/python2 -Es /usr/sbin/firewalld --nofork --nopid
+
+
+
+Dec 20 13:45:19 nfss systemd[1]: Starting firewalld - dynamic firewall daemon...
+
+Dec 20 13:45:21 nfss systemd[1]: Started firewalld - dynamic firewall daemon.
+
+Dec 20 13:45:22 nfss firewalld[401]: WARNING: AllowZoneDrifting is enabled. This is considered an insecure configuration option. It will be removed in a f...ng it now.
+
+Hint: Some lines were ellipsized, use -l to show in full.
+
+
+[root@nfss vagrant]# showmount -a 192.168.57.1
+
+All mount points on 192.168.57.1:
+
+[root@nfss vagrant]# showmount -e 192.168.57.1
+
+Export list for 192.168.57.1:
+
+/srv/share *
+
+[root@nfss vagrant]# 
+
+/srv/share  *(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)
+
+Проверка авто Vagrant
+
+cd /srv/share/upload
+
+[root@nfss upload]# touch check_file
+
+[root@nfss upload]# ll
+
+total 0
+
+-rw-r--r--. 1 root    root    0 Dec 20 15:27 check_file
+
+-rw-rw-r--. 1 vagrant vagrant 0 Dec 20 15:28 client_file
+
+[root@nfss upload]# 
+
+--------------------------------------------------------------------------------
+[root@nfss upload]# reboot
+
+Connection to 127.0.0.1 closed by remote host.
+
+root@Ubuntu:/home/user/nfs# vagrant ssh nfss
+
+Last login: Wed Dec 20 15:23:04 2023 from 10.0.2.2
+
+[vagrant@nfss ~]$ sudo -s
+
+[root@nfss vagrant]# ls -l /srv/share/upload/
+
+total 0
+
+-rw-r--r--. 1 root    root    0 Dec 20 15:27 check_file
+
+-rw-rw-r--. 1 vagrant vagrant 0 Dec 20 15:28 client_file
+
+[root@nfss vagrant]# systemctl status nfs
+
+● nfs-server.service - NFS server and services
+
+   Loaded: loaded (/usr/lib/systemd/system/nfs-server.service; enabled; vendor preset: disabled)
+
+  Drop-In: /run/systemd/generator/nfs-server.service.d
+
+           └─order-with-mounts.conf
+
+   Active: active (exited) since Wed 2023-12-20 15:31:43 UTC; 2min 19s ago
+
+  Process: 813 ExecStartPost=/bin/sh -c if systemctl -q is-active gssproxy; then systemctl reload gssproxy ; fi (code=exited, status=0/SUCCESS)
+
+  Process: 784 ExecStart=/usr/sbin/rpc.nfsd $RPCNFSDARGS (code=exited, status=0/SUCCESS)
+
+  Process: 781 ExecStartPre=/usr/sbin/exportfs -r (code=exited, status=0/SUCCESS)
+
+ Main PID: 784 (code=exited, status=0/SUCCESS)
+
+   CGroup: /system.slice/nfs-server.service
+
+
+
+Dec 20 15:31:43 nfss systemd[1]: Starting NFS server and services...
+
+Dec 20 15:31:43 nfss systemd[1]: Started NFS server and services.
+
+[root@nfss vagrant]# systemctl status firewalld
+
+● firewalld.service - firewalld - dynamic firewall daemon
+
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+
+   Active: active (running) since Wed 2023-12-20 15:31:37 UTC; 2min 33s ago
+
+     Docs: man:firewalld(1)
+
+ Main PID: 405 (firewalld)
+
+   CGroup: /system.slice/firewalld.service
+
+           └─405 /usr/bin/python2 -Es /usr/sbin/firewalld --nofork --nopid
+
+
+
+Dec 20 15:31:34 nfss systemd[1]: Starting firewalld - dynamic firewall daemon...
+
+Dec 20 15:31:37 nfss systemd[1]: Started firewalld - dynamic firewall daemon.
+
+Dec 20 15:31:37 nfss firewalld[405]: WARNING: AllowZoneDrifting is enabled. This is considered an insecure configuration option. It will be removed in a f...ng it now.
+
+Hint: Some lines were ellipsized, use -l to show in full.
+
+[root@nfss vagrant]# showmount -e 192.168.57.1
+
+Export list for 192.168.57.1:
+
+/srv/share *
+
+[root@nfss vagrant]# 
+```
+
+
+
+
+
+
+
+
+
+
+

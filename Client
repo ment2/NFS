@@ -1,0 +1,167 @@
+```bash
+Клиент
+
+[root@nfsc vagrant]# mount 192.168.57.1:/srv/share/ /mnt
+
+[root@nfsc vagrant]# df -h
+
+Filesystem               Size  Used Avail Use% Mounted on
+
+devtmpfs                 111M     0  111M   0% /dev
+
+tmpfs                    118M     0  118M   0% /dev/shm
+
+tmpfs                    118M  4.6M  113M   4% /run
+
+tmpfs                    118M     0  118M   0% /sys/fs/cgroup
+
+/dev/sda1                 40G  3.2G   37G   8% /
+
+tmpfs                     24M     0   24M   0% /run/user/1000
+
+tmpfs                     24M     0   24M   0% /run/user/0
+
+192.168.57.1:/srv/share   40G  3.2G   37G   8% /mnt
+
+[root@nfsc vagrant]# 
+
+[root@nfsc vagrant]# 
+
+[root@nfsc vagrant]# mount | grep mnt
+
+systemd-1 on /mnt type autofs (rw,relatime,fd=46,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=23412)
+
+192.168.57.1:/srv/share on /mnt type nfs4 (rw,relatime,vers=4.1,rsize=32768,wsize=32768,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,clientaddr=192.168.57.2,local_lock=none,addr=192.168.57.1)
+
+[root@nfsc vagrant]# cd /mnt/upload/
+
+[root@nfsc upload]# ls
+
+check_file
+
+[root@nfsc upload]# touch client_file
+
+[root@nfsc upload]# reboot
+
+Connection to 127.0.0.1 closed by remote host.
+
+root@Ubuntu:/home/user/nfs# vagrant ssh nfsc
+
+Last login: Wed Dec 20 12:43:09 2023 from 10.0.2.2
+
+[vagrant@nfsc ~]$ sudo -s
+
+[root@nfsc vagrant]# showmount -a 192.168.57.1
+
+All mount points on 192.168.57.1:
+
+[root@nfsc vagrant]# showmount -e 192.168.57.1
+
+Export list for 192.168.57.1:
+
+/srv/share *
+
+[root@nfsc vagrant]# cd /mnt/upload/
+
+[root@nfsc upload]# mount | grep mnt
+
+systemd-1 on /mnt type autofs (rw,relatime,fd=31,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=10956)
+
+192.168.57.1:/srv/share/ on /mnt type nfs (rw,relatime,vers=3,rsize=32768,wsize=32768,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=192.168.57.1,mountvers=3,mountport=20048,mountproto=tcp,local_lock=none,addr=192.168.57.1)
+
+[root@nfsc upload]# ll
+
+total 0
+
+-rw-r--r--. 1 root      root      0 Dec 20 13:09 check_file
+
+-rw-r--r--. 1 nfsnobody nfsnobody 0 Dec 20 13:11 client_file
+
+[root@nfsc upload]# touch final_check
+
+[root@nfsc upload]# ll
+
+total 0
+
+-rw-r--r--. 1 root      root      0 Dec 20 13:09 check_file
+
+-rw-r--r--. 1 nfsnobody nfsnobody 0 Dec 20 13:11 client_file
+
+-rw-r--r--. 1 nfsnobody nfsnobody 0 Dec 20 14:03 final_check
+
+[root@nfsc upload]# 
+
+Проверка авто Vagrant
+[vagrant@nfsc ~]$ cd /mnt/upload
+
+[vagrant@nfsc upload]$ ll
+
+total 0
+
+-rw-r--r--. 1 root root 0 Dec 20 15:27 check_file
+
+[vagrant@nfsc upload]$ touch client_file
+
+[vagrant@nfsc upload]$ ll
+
+total 0
+
+-rw-r--r--. 1 root    root    0 Dec 20 15:27 check_file
+
+-rw-rw-r--. 1 vagrant vagrant 0 Dec 20 15:28 client_file
+
+[vagrant@nfsc upload]$ 
+
+-------------------------------------------------------------------------------------
+
+[root@nfsc upload]# reboot
+
+Connection to 127.0.0.1 closed by remote host.
+
+root@Ubuntu:/home/user/nfs# vagrant ssh nfsc
+
+Last login: Wed Dec 20 15:25:32 2023 from 10.0.2.2
+
+[vagrant@nfsc ~]$ sudo -s
+
+[root@nfsc vagrant]# showmount -e 192.168.57.1
+
+Export list for 192.168.57.1:
+
+/srv/share *
+
+[root@nfsc vagrant]# ls -l /mnt/upload
+
+total 0
+
+-rw-r--r--. 1 root    root    0 Dec 20 15:27 check_file
+
+-rw-rw-r--. 1 vagrant vagrant 0 Dec 20 15:28 client_file
+
+[root@nfsc vagrant]# mount | grep mnt
+
+systemd-1 on /mnt type autofs (rw,relatime,fd=26,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=10933)
+
+192.168.57.1:/srv/share/ on /mnt type nfs (rw,relatime,vers=3,rsize=32768,wsize=32768,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=192.168.57.1,mountvers=3,mountport=20048,mountproto=tcp,local_lock=none,addr=192.168.57.1)
+
+[root@nfsc upload]# cd /mnt/upload/
+
+[root@nfsc upload]# touch final_check
+
+[root@nfsc upload]# ll
+
+total 0
+
+-rw-r--r--. 1 root      root      0 Dec 20 15:27 check_file
+
+-rw-rw-r--. 1 vagrant   vagrant   0 Dec 20 15:28 client_file
+
+-rw-r--r--. 1 nfsnobody nfsnobody 0 Dec 20 15:40 final_check
+
+[root@nfsc upload]# 
+```
+
+
+
+
+
